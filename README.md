@@ -23,7 +23,6 @@ Get the latest version from the [Releases](https://github.com/AkiraDev7004/GoonC
 | Windows (portable)  | `GoonCord-x.y.z-win.zip` (x64 or arm64) |
 | Linux (any distro)  | `GoonCord-x.y.z.AppImage`               |
 | Linux (archive)     | `gooncord-x.y.z.tar.gz`                 |
-| macOS               | `.dmg` / `.zip`                         |
 
 Once installed, GoonCord checks for updates when it starts and then every 6 hours. When an update is ready you can install it from the updater window. You can also choose to ignore an update or be reminded a day later.
 
@@ -42,7 +41,6 @@ The script closes GoonCord, removes its install folder, shortcuts and uninstall 
 Configure them in the GoonCord settings, or from Discord's Keybinds and Voice & Video settings.
 
 - **Windows, Linux (X11)**: Bind any keys or mouse buttons in the GoonCord keybind settings
-- **macOS**: Same as above, but GoonCord needs the Accessibility permission
 - **Linux (Wayland)**: Wayland doesn't let apps listen to global input. Enable global shortcuts in the GoonCord keybind settings and assign them in your system settings. This needs a desktop that supports the GlobalShortcuts portal, such as GNOME or KDE
 
 You can also trigger actions from other programs, for example your compositor's keybinds:
@@ -104,7 +102,7 @@ git tag v1.7.1
 git push origin v1.7.1
 ```
 
-The workflow builds Windows, Linux and macOS and attaches the files to a GitHub release. Installed copies of GoonCord look for a newer release of this repository, so the version in `package.json` must be higher than the installed one.
+The workflow builds Windows and Linux and attaches the files to a GitHub release. Installed copies of GoonCord look for a newer release of this repository, so the version in `package.json` must be higher than the installed one.
 
 ## Building LibVesktop from Source
 
