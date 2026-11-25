@@ -196,7 +196,10 @@
             ]
         },
         "publish": {
-            "provider": "github"
+            "provider": "github",
+            "owner": "AkiraDev7004",
+            "repo": "GoonCord-Discord-Client-mod",
+            "releaseType": "release"
         },
         "rpm": {
             "fpm": [

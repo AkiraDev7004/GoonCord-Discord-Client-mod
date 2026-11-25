@@ -37,10 +37,24 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 autoUpdater.fullChangelog = true;
 
-// GoonCord does not auto-update from the Vesktop releases
-const isOutdated = Promise.resolve(false);
+// GoonCord updates from its own GitHub releases (see "publish" in package.json)
+function checkForGoonUpdate(): Promise<UpdateInfo | null> {
+    if (!app.isPackaged) return Promise.resolve(null);
+    return autoUpdater
+        .checkForUpdates()
+        .then(res => (res?.isUpdateAvailable ? res.updateInfo : null))
+        .catch(() => null);
+}
 
-handle(IpcEvents.UPDATER_IS_OUTDATED, () => isOutdated);
+// Check shortly after start and then every 6 hours. A found update opens the updater window
+// (respecting "ignore" and "snooze") through the update-available handler above.
+const UPDATE_CHECK_INTERVAL = 6 * 60 * 60 * 1000;
+app.whenReady().then(() => {
+    setTimeout(() => void checkForGoonUpdate(), 10_000);
+    setInterval(() => void checkForGoonUpdate(), UPDATE_CHECK_INTERVAL);
+});
+
+handle(IpcEvents.UPDATER_IS_OUTDATED, async () => (await checkForGoonUpdate()) !== null);
 handle(IpcEvents.UPDATER_OPEN, async () => {
     const res = await autoUpdater.checkForUpdates();
     if (res?.isUpdateAvailable && res.updateInfo) openUpdater(res.updateInfo);
