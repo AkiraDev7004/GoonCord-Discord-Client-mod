@@ -1,6 +1,6 @@
 /*
  * Vesktop, a desktop app aiming to give you a snappier Discord Experience
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * Copyright (c) 2023 Vendicated and Vesktop contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -8,8 +8,8 @@ import { mkdirSync } from "fs";
 import { access, constants as FsConstants, copyFile, rename, writeFile } from "fs/promises";
 import { join } from "path";
 
-import { STATIC_DIR } from "shared/paths";
 import { VENCORD_FILES_DIR } from "main/vencordFilesDir";
+import { STATIC_DIR } from "shared/paths";
 
 import { USER_AGENT } from "../constants";
 import { downloadFile, fetchie } from "./http";
@@ -52,7 +52,9 @@ const BUNDLED_RUNTIME_DIR = join(STATIC_DIR, "runtime");
 export async function downloadVencordFiles() {
     if (await isValidVencordInstall(BUNDLED_RUNTIME_DIR)) {
         mkdirSync(VENCORD_FILES_DIR, { recursive: true });
-        await Promise.all(FILES_TO_DOWNLOAD.map(f => copyFile(join(BUNDLED_RUNTIME_DIR, f), join(VENCORD_FILES_DIR, f))));
+        await Promise.all(
+            FILES_TO_DOWNLOAD.map(f => copyFile(join(BUNDLED_RUNTIME_DIR, f), join(VENCORD_FILES_DIR, f)))
+        );
         await writeFile(join(VENCORD_FILES_DIR, "package.json"), "{}");
         return;
     }

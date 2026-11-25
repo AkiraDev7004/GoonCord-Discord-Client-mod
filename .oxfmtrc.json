@@ -10,5 +10,6 @@
     "endOfLine": "lf",
     "sortImports": true,
     "sortPackageJson": false,
-    "insertFinalNewline": true
+    "insertFinalNewline": true,
+    "ignorePatterns": ["static/runtime/**"]
 }

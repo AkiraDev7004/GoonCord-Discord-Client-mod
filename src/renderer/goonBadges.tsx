@@ -7,9 +7,9 @@
 import { addProfileBadge, BadgeUserArgs } from "@vencord/types/api/Badges";
 import { UserStore } from "@vencord/types/webpack/common";
 /*
- * GoonCord: client-side only. Every badge here is shown ONLY on the profile of the account
- * that owns this client (goonkatze). The owner ID is remembered per install, so the
- * badges stay visible after switching to another account. Nobody else ever sees them.
+ * GoonCord: client-side only. Every badge here is shown on the profile of goonkatze, for
+ * every user who runs GoonCord. Other profiles never show them, and clients without
+ * GoonCord never see them.
  *
  * Nothing in this file may create React elements at module load: the renderer script
  * runs before Discord's React is available, so all JSX lives inside functions.
@@ -17,23 +17,15 @@ import { UserStore } from "@vencord/types/webpack/common";
 import type { ReactElement } from "react";
 
 const OWNER_USERNAME = "goonkatze";
-const OWNER_ID_KEY = "goon_owner_id";
 
-function getOwnerId(): string | null {
-    try {
-        const me = UserStore.getCurrentUser();
-        if (me?.username === OWNER_USERNAME) {
-            localStorage.setItem(OWNER_ID_KEY, me.id);
-            return me.id;
-        }
-        return localStorage.getItem(OWNER_ID_KEY);
-    } catch {
-        return null;
-    }
-}
-
+// Every GoonCord client shows the badges on the profile of goonkatze, wherever it is seen.
+// The profile is matched by username, so no user ID has to be stored or hardcoded.
 function isOwnerProfile(userId: string): boolean {
-    return getOwnerId() === userId;
+    try {
+        return UserStore.getUser(userId)?.username?.toLowerCase() === OWNER_USERNAME;
+    } catch {
+        return false;
+    }
 }
 
 // ---- Badge artwork: own vector icons, 18x18. Built lazily inside functions. ----
