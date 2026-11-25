@@ -1,0 +1,17 @@
+patchedDependencies:
+    electron-updater: patches/electron-updater.patch
+nodeLinker: hoisted
+allowBuilds:
+    "@vencord/venmic": true
+    electron: true
+    electron-winstaller: false
+    esbuild: true
+    uiohook-napi: true
+pmOnFail: warn
+verifyDepsBeforeRun: warn
+recursiveInstall: false
+packages:
+    - packages/*
+minimumReleaseAgeExclude:
+    - electron
+    - "@vencord/*"
