@@ -1,37 +1,57 @@
-# Vesktop
+# GoonCord
 
-Vesktop is a custom Discord desktop app
+GoonCord is a custom Discord desktop client, based on [Vesktop](https://github.com/Vencord/Vesktop) and with [Vencord](https://github.com/Vendicated/Vencord) preinstalled.
 
-**Main features**:
+**Features**:
 
-- Vencord preinstalled
-- Much more lightweight and faster than the official Discord app
-- Linux Screenshare with sound & wayland
-- Much better privacy, since Discord has no access to your system
+- Vencord preinstalled, with its own settings, plugins and QuickCSS
+- OLED Black theme by default
+- Automatic updates from this repository's GitHub releases
+- Much lighter and faster than the official Discord app
+- Linux screenshare with sound & Wayland support
+- Better privacy, since Discord has no direct access to your system
 - Global keybinds, including push to talk (see [Global Keybinds](#global-keybinds))
+- Runs side by side with Vesktop and Vencord, since it has its own app ID and data folder
 
-![](https://github.com/Vencord/Vesktop/assets/45497981/8608a899-96a9-4027-9725-2cb02ba189fd)
-![](https://github.com/Vencord/Vesktop/assets/45497981/8701e5de-52c4-4346-a990-719cb971642e)
+## Downloads
 
-## Installing
+Get the latest version from the [Releases](https://github.com/AkiraDev7004/GoonCord-Discord-Client-mod/releases) page:
 
-Visit https://vesktop.dev/install
+| Platform            | File                                    |
+| ------------------- | --------------------------------------- |
+| Windows (installer) | `GoonCord Setup x.y.z.exe`              |
+| Windows (portable)  | `GoonCord-x.y.z-win.zip` (x64 or arm64) |
+| Linux (any distro)  | `GoonCord-x.y.z.AppImage`               |
+| Linux (archive)     | `gooncord-x.y.z.tar.gz`                 |
+| macOS               | `.dmg` / `.zip`                         |
+
+Once installed, GoonCord checks for updates when it starts and then every 6 hours. When an update is ready you can install it from the updater window. You can also choose to ignore an update or be reminded a day later.
+
+## Uninstalling (Windows)
+
+Uninstall GoonCord from **Settings > Apps**, or run the uninstaller script that ships with the Windows build:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File Uninstall-GoonCord.ps1
+```
+
+The script closes GoonCord, removes its install folder, shortcuts and uninstall entry, and asks before deleting your settings. Vesktop and Vencord are not touched.
 
 ## Global Keybinds
 
-Configure them in the Vesktop settings, or from Discord's Keybinds and Voice & Video settings.
+Configure them in the GoonCord settings, or from Discord's Keybinds and Voice & Video settings.
 
-- **Windows, Linux (X11)**: Bind any keys or mouse buttons in the Vesktop keybind settings
-- **macOS**: Same as above, but Vesktop needs the Accessibility permission
-- **Linux (Wayland)**: Wayland doesn't let apps listen to global input. Enable global shortcuts in the Vesktop keybind settings and assign them in your system settings. This requires a desktop that supports the GlobalShortcuts portal, like GNOME or KDE
+- **Windows, Linux (X11)**: Bind any keys or mouse buttons in the GoonCord keybind settings
+- **macOS**: Same as above, but GoonCord needs the Accessibility permission
+- **Linux (Wayland)**: Wayland doesn't let apps listen to global input. Enable global shortcuts in the GoonCord keybind settings and assign them in your system settings. This needs a desktop that supports the GlobalShortcuts portal, such as GNOME or KDE
 
 You can also trigger actions from other programs, for example your compositor's keybinds:
 
 ```sh
-vesktop --run-shortcut toggleMute
+gooncord --run-shortcut toggleMute
 # Append :down or :up to only press or release, e.g. for push to talk
-vesktop --run-shortcut pushToTalk:down
-vesktop --run-shortcut pushToTalk:up
+gooncord --run-shortcut pushToTalk:down
+gooncord --run-shortcut pushToTalk:up
 ```
 
 For lower latency, send the same commands as lines to the socket at `$XDG_RUNTIME_DIR/vesktop.sock`:
@@ -40,46 +60,62 @@ For lower latency, send the same commands as lines to the socket at `$XDG_RUNTIM
 echo "run-shortcut pushToTalk:down" | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/vesktop.sock
 ```
 
-Run `vesktop --help` to see all actions.
+Run `gooncord --help` to see all actions.
 
 ## Building from Source
 
-You need to have the following dependencies installed:
+You need:
 
 - [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/download)
+- [Node.js](https://nodejs.org/en/download) 22 or newer
 - pnpm: `npm install --global pnpm`
 
-Packaging will create builds in the dist/ folder
-
 ```sh
-git clone https://github.com/Vencord/Vesktop
-cd Vesktop
+git clone https://github.com/AkiraDev7004/GoonCord-Discord-Client-mod
+cd GoonCord-Discord-Client-mod
 
-# Install Dependencies
+# Install dependencies
 pnpm i
 
-# Either run it without packaging
+# Run without packaging
 pnpm start
 
-# Or package (will build packages for your OS)
+# Package for your OS (builds go to ../Build)
 pnpm package
-
-# Or only build the Linux Pacman package
-pnpm package --linux pacman
 
 # Or package to a directory only
 pnpm package:dir
 ```
 
+Checks used by CI:
+
+```sh
+pnpm test        # lint, format check and type check
+pnpm build       # production build
+pnpm build --dev # development build
+```
+
+## Releases and Auto-Update
+
+Releases are built by the `Release` workflow. It runs when a tag starting with `v` is pushed:
+
+```sh
+git tag v1.7.1
+git push origin v1.7.1
+```
+
+The workflow builds Windows, Linux and macOS and attaches the files to a GitHub release. Installed copies of GoonCord look for a newer release of this repository, so the version in `package.json` must be higher than the installed one.
+
 ## Building LibVesktop from Source
 
-This is a small C++ helper library Vesktop uses on Linux to emit D-Bus events. By default, prebuilt binaries for x64 and arm64 are used.
+LibVesktop is a small C++ helper library used on Linux to send D-Bus events. By default, prebuilt binaries for x64 and arm64 are used. To build it yourself:
 
-If you want to build it from source:
-
-1. Install build dependencies:
+1. Install the build dependencies:
     - Debian/Ubuntu: `apt install build-essential python3 curl pkg-config libglib2.0-dev`
     - Fedora: `dnf install @c-development @development-tools python3 curl pkgconf-pkg-config glib2-devel`
 2. Run `pnpm buildLibVesktop`
-3. From now on, building Vesktop will use your own build
+3. From then on, builds use your own library.
+
+## Credits
+
+GoonCord is built on [Vesktop](https://github.com/Vencord/Vesktop) and [Vencord](https://github.com/Vendicated/Vencord). Both are licensed under GPL-3.0-or-later, and so is GoonCord (see [LICENSE](LICENSE)). The original copyright notices are kept in the source files.
