@@ -20,12 +20,9 @@ import { loadView } from "./vesktopStatic";
 
 let updaterWindow: BrowserWindow | null = null;
 
-autoUpdater.on("update-available", update => {
-    if (State.store.updater?.ignoredVersion === update.version) return;
-    if ((State.store.updater?.snoozeUntil ?? 0) > Date.now()) return;
-
-    openUpdater(update);
-});
+// The newest release of this app, or null. Filled by the background check and only read by the renderer,
+// so the renderer never causes an extra request to GitHub.
+let availableUpdate: UpdateInfo | null = null;
 
 autoUpdater.on("update-downloaded", () => setTimeout(() => autoUpdater.quitAndInstall(), 100));
 autoUpdater.on("download-progress", p =>
@@ -37,27 +34,37 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 autoUpdater.fullChangelog = true;
 
-// GoonCord updates from its own GitHub releases (see "publish" in package.json)
-function checkForGoonUpdate(): Promise<UpdateInfo | null> {
-    if (!app.isPackaged) return Promise.resolve(null);
-    return autoUpdater
-        .checkForUpdates()
-        .then(res => (res?.isUpdateAvailable ? res.updateInfo : null))
-        .catch(() => null);
+// The banner is hidden when the user chose to ignore this version or snoozed the updates
+function isUpdateVisible(update: UpdateInfo) {
+    if (State.store.updater?.ignoredVersion === update.version) return false;
+    return (State.store.updater?.snoozeUntil ?? 0) <= Date.now();
 }
 
-// Check shortly after start and then every 6 hours. A found update opens the updater window
-// (respecting "ignore" and "snooze") through the update-available handler above.
-const UPDATE_CHECK_INTERVAL = 6 * 60 * 60 * 1000;
+async function checkForGoonUpdate(): Promise<UpdateInfo | null> {
+    if (!app.isPackaged) return null;
+
+    try {
+        const res = await autoUpdater.checkForUpdates();
+        availableUpdate = res?.isUpdateAvailable && res.updateInfo ? res.updateInfo : null;
+    } catch {
+        // Offline or GitHub not reachable: keep the last known result
+    }
+    return availableUpdate;
+}
+
+// Checked shortly after start and then every 2 minutes
+const UPDATE_CHECK_INTERVAL = 2 * Millis.MINUTE;
 app.whenReady().then(() => {
     setTimeout(() => void checkForGoonUpdate(), 10_000);
     setInterval(() => void checkForGoonUpdate(), UPDATE_CHECK_INTERVAL);
 });
 
-handle(IpcEvents.UPDATER_IS_OUTDATED, async () => (await checkForGoonUpdate()) !== null);
+// Answers from the cached result; no request is made here
+handle(IpcEvents.UPDATER_IS_OUTDATED, () => availableUpdate !== null && isUpdateVisible(availableUpdate));
+
 handle(IpcEvents.UPDATER_OPEN, async () => {
-    const res = await autoUpdater.checkForUpdates();
-    if (res?.isUpdateAvailable && res.updateInfo) openUpdater(res.updateInfo);
+    const update = (await checkForGoonUpdate()) ?? availableUpdate;
+    if (update) openUpdater(update);
 });
 
 function openUpdater(update: UpdateInfo) {

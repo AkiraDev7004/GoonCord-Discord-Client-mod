@@ -1,12 +1,13 @@
 /*
  * Vesktop, a desktop app aiming to give you a snappier Discord Experience
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * Copyright (c) 2023 Vendicated and Vesktop contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import "./themedSplash";
 import "./goonTheme";
 import "./goonBadges";
+import "./goonUpdateBanner";
 import "./ipcCommands";
 import "./appBadge";
 import "./fixes";

@@ -20,9 +20,16 @@ const OWNER_USERNAME = "goonkatze";
 
 // Every GoonCord client shows the badges on the profile of goonkatze, wherever it is seen.
 // The profile is matched by username, so no user ID has to be stored or hardcoded.
+const shownFor = new Set<string>();
+
 function isOwnerProfile(userId: string): boolean {
     try {
-        return UserStore.getUser(userId)?.username?.toLowerCase() === OWNER_USERNAME;
+        const match = UserStore.getUser(userId)?.username?.toLowerCase() === OWNER_USERNAME;
+        if (match && !shownFor.has(userId)) {
+            shownFor.add(userId);
+            console.info("[GoonCord] goonkatze badges shown for profile", userId);
+        }
+        return match;
     } catch {
         return false;
     }
@@ -376,3 +383,4 @@ for (const badge of BADGES) {
         console.error("GoonCord: failed to register badge", id, err);
     }
 }
+console.info(`[GoonCord] ${BADGES.length} goonkatze badges registered`);
