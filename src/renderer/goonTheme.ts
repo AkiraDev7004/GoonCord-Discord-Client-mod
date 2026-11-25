@@ -1,8 +1,11 @@
 /*
- * GoonCord, a Discord client based on Vesktop
+ * Vesktop, a desktop app aiming to give you a snappier Discord Experience
+ * Copyright (c) 2026 Vendicated and Vesktop contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * Default theme: OLED Black. Injected at startup, dark mode only.
+ */
+
+/*
+ * GoonCord default theme: OLED Black. Injected at startup, dark mode only.
  */
 
 const STYLE_ID = "goon-oled-black";
