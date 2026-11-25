@@ -7,7 +7,6 @@
 import "./themedSplash";
 import "./goonTheme";
 import "./goonNoPasskey";
-import "./goonBadges";
 import "./goonUpdateBanner";
 import "./goonOwnerTag";
 import "./ipcCommands";
