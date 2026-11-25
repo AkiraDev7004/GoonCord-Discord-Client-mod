@@ -1,0 +1,25 @@
+/*
+ * Vesktop, a desktop app aiming to give you a snappier Discord Experience
+ * Copyright (c) 2025 Vendicated and Vesktop contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
+ * GoonCord: passkeys (WebAuthn) are disabled. Discord's passkey login would open the
+ * Windows security-key dialog, so every request for a passkey is refused right away
+ * and the login falls back to the password.
+ */
+
+const deny = () => Promise.reject(new DOMException("Passkeys are disabled in GoonCord", "NotAllowedError"));
+
+try {
+    const credentials = navigator.credentials as any;
+    if (credentials) {
+        credentials.get = deny;
+        credentials.create = deny;
+    }
+} catch (err) {
+    console.error("GoonCord: could not disable passkeys", err);
+}
+
+export {};

@@ -13,6 +13,10 @@ GoonCord is a custom Discord desktop client, based on [Vesktop](https://github.c
 - Global keybinds, including push to talk (see [Global Keybinds](#global-keybinds))
 - Runs side by side with Vesktop and Vencord, since it has its own app ID and data folder
 
+## Passkeys
+
+GoonCord does not support passkeys. The Windows passkey / security-key manager prompt was removed: every passkey request is refused, so you log in with your password instead.
+
 ## Downloads
 
 Get the latest version from the [Releases](https://github.com/AkiraDev7004/GoonCord-Discord-Client-mod/releases) page:
