@@ -1,6 +1,6 @@
 {
     "name": "gooncord",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "private": true,
     "description": "GoonCord is a custom Discord desktop app, based on Vesktop",
     "keywords": [],
